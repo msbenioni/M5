@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { Search } from 'lucide-react';
+import debounce from 'lodash/debounce';
 import Header from './components/Header/Header';
 import AuctionCard from './components/AuctionCard';
 import { api } from './services/api';
@@ -9,6 +11,9 @@ function App() {
   const [auctions, setAuctions] = useState<Auction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Auction[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const fetchAuctions = async () => {
     try {
@@ -24,18 +29,32 @@ function App() {
     }
   };
 
+  const debouncedSearch = debounce(async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      setSearchResults(data);
+    } catch (error) {
+      console.error('Search error:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  }, 300);
+
   useEffect(() => {
     fetchAuctions();
   }, []);
 
-  const handleDeleteAuction = async (id: string) => {
-    try {
-      await api.deleteAuction(id);
-      setAuctions(auctions.filter(auction => auction._id !== id));
-    } catch (error) {
-      console.error('Failed to delete auction:', error);
-    }
-  };
+  useEffect(() => {
+    debouncedSearch(searchQuery);
+    return () => debouncedSearch.cancel();
+  }, [searchQuery]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -45,15 +64,43 @@ function App() {
         <div className="bg-gradient-to-r from-[#4B4ACF] to-[#5B87FF] rounded-lg p-8 mb-12">
           <h1 className="text-4xl font-bold mb-4 text-[#FFB6C1]">KIA ORA, READY TO START BIDDING?</h1>
           <p className="text-xl mb-6 text-white">Discover amazing auction deals on thousands of items</p>
-          <div className="flex">
-            <input
-              type="text"
-              placeholder="Search all of Trade Me"
-              className="flex-grow px-4 py-3 rounded-l-lg focus:outline-none"
-            />
-            <button className="bg-[#0078C9] text-white px-8 py-3 rounded-r-lg font-semibold hover:bg-opacity-90 transition-colors">
-              Search
-            </button>
+          <div className="relative">
+            <div className="flex">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search all of Trade Me"
+                className="flex-grow px-4 py-3 rounded-l-lg focus:outline-none"
+              />
+              <button 
+                className="bg-[#0078C9] text-white px-8 py-3 rounded-r-lg font-semibold hover:bg-opacity-90 transition-colors flex items-center gap-2"
+              >
+                <Search className="h-5 w-5" />
+                Search
+              </button>
+            </div>
+
+            {/* Search Results Dropdown */}
+            {searchResults.length > 0 && (
+              <div className="absolute w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                {searchResults.map((item) => (
+                  <div
+                    key={item._id}
+                    className="p-4 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
+                  >
+                    <div className="font-medium text-gray-900">{item.title}</div>
+                    <div className="text-sm text-gray-600">{item.description}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {isSearching && (
+              <div className="absolute w-full mt-2 p-4 text-center bg-white text-gray-500 rounded-lg border border-gray-200">
+                Loading...
+              </div>
+            )}
           </div>
         </div>
 
@@ -83,8 +130,7 @@ function App() {
                 .map((auction) => (
                   <AuctionCard 
                     key={auction._id} 
-                    {...auction} 
-                    onDelete={() => auction._id && handleDeleteAuction(auction._id)}
+                    {...auction}
                   />
                 ))}
             </div>
