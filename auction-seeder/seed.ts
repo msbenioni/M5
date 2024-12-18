@@ -65,7 +65,7 @@ const seedDatabase = async (options: { drop?: boolean }) => {
         const insertedAuctions = await Auction.insertMany(sampleAuctions);
         console.log(`Inserted ${insertedAuctions.length} auctions`);
         
-        console.log('Seeding completed!');
+        console.log('Database seeded successfully!');
     } catch (error) {
         console.error('Error seeding database:', error);
     } finally {
