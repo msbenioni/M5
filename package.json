@@ -11,8 +11,8 @@
     "server": "nodemon --exec ts-node --files server/index.ts",
     "build:server": "tsc -p tsconfig.json",
     "start:server": "node dist/server/index.js",
-    "seed": "ts-node scripts/seedAuctions.ts",
-    "seed:drop": "ts-node scripts/seedAuctions.ts --drop"
+    "seed": "set NODE_OPTIONS=--loader ts-node/esm && node --experimental-modules auction-seeder/seed.ts",
+    "seed:drop": "set NODE_OPTIONS=--loader ts-node/esm && node --experimental-modules auction-seeder/seed.ts --drop"
   },
   "dependencies": {
     "commander": "^11.1.0",
