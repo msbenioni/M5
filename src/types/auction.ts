@@ -1,15 +1,16 @@
 export interface Auction {
-  _id: string;
+  _id?: string;
   title: string;
   description: string;
   image: string;
-  startPrice: number;
-  currentBid: number;
-  reservePrice: number;
+  start_price: number;
+  current_bid?: number;
+  reserve_price: number;
   buyNow?: number;
   sellerName: string;
-  endTime: Date;
-  createdAt: Date;
+  timeLeft?: string;
+  reserveMet?: boolean;
+  createdAt?: Date;
 }
 
 // Helper function to format time left

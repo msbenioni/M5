@@ -1,9 +1,42 @@
+import { useState, useEffect } from 'react';
 import Header from './components/Header/Header';
 import AuctionCard from './components/AuctionCard';
-import { featuredAuctions } from './constants/auctions';
+import { api } from './services/api';
+import type { Auction } from './types/auction';
 import Footer from './components/Footer/Footer';
 
 function App() {
+  const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAuctions = async () => {
+    try {
+      setLoading(true);
+      const data = await api.getAuctions();
+      setAuctions(data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load auctions');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAuctions();
+  }, []);
+
+  const handleDeleteAuction = async (id: string) => {
+    try {
+      await api.deleteAuction(id);
+      setAuctions(auctions.filter(auction => auction._id !== id));
+    } catch (error) {
+      console.error('Failed to delete auction:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -39,11 +72,23 @@ function App() {
         {/* Featured Auctions */}
         <section>
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Featured Auctions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredAuctions.map((auction, index) => (
-              <AuctionCard key={index} {...auction} />
-            ))}
-          </div>
+          {loading ? (
+            <div>Loading...</div>
+          ) : error ? (
+            <div className="text-red-600">{error}</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {auctions
+                .filter((auction): auction is Auction & { _id: string } => !!auction._id)
+                .map((auction) => (
+                  <AuctionCard 
+                    key={auction._id} 
+                    {...auction} 
+                    onDelete={() => auction._id && handleDeleteAuction(auction._id)}
+                  />
+                ))}
+            </div>
+          )}
         </section>
       </main>
 
