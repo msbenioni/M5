@@ -1,13 +1,12 @@
 import React from 'react';
 import { Menu } from 'lucide-react';
-import SearchBar from './SearchBar';
 import Navigation from './Navigation';
 import Categories from './Categories';
 import TradeMeLogo from '../../assets/images/Trade Me.svg'
 
 const Header = () => {
   return (
-    <header className="fixed top-0 w-full bg-white shadow-sm z-50">
+    <header className="fixed top-0 w-full bg-[#F5F5F5] shadow-sm z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -19,7 +18,7 @@ const Header = () => {
             />
           </div>
 
-          <SearchBar />
+      <Categories />
           <Navigation />
 
           {/* Mobile Menu */}
@@ -29,7 +28,6 @@ const Header = () => {
         </div>
       </div>
 
-      <Categories />
     </header>
   );
 };

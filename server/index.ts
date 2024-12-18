@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import auctionRoutes from './routes/auctions.js';
+import searchRoutes from './routes/search.js';
 
 dotenv.config();
 
@@ -11,11 +12,14 @@ const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/auction-seeder';
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173' // Your Vite frontend URL
+}));
 app.use(express.json());
 
 // Routes
 app.use('/api/auctions', auctionRoutes);
+app.use('/api/search', searchRoutes);
 
 // MongoDB Connection
 mongoose.connect(MONGODB_URI)

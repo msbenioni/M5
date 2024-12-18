@@ -6,7 +6,7 @@ interface AuctionCardProps {
   title: string;
   image: string;
   current_bid?: number;
-  endDate: string | Date;
+  endDate?: string | Date;
   location?: string;
   reserveMet?: boolean;
   onWatchlist?: () => void;
@@ -22,6 +22,7 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
   onWatchlist
 }) => {
   const formatTimeLeft = () => {
+    if (!endDate) return '';
     const end = new Date(endDate);
     const now = new Date();
     const diff = end.getTime() - now.getTime();
@@ -40,6 +41,7 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
   };
 
   const isClosingSoon = () => {
+    if (!endDate) return false;
     const end = new Date(endDate);
     const now = new Date();
     const diff = end.getTime() - now.getTime();

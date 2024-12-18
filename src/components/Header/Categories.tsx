@@ -11,7 +11,7 @@ const categories = [
 
 const Categories = () => {
   return (
-    <div className="bg-[#F5F5F5] border-t">
+    <div className="bg-[#F5F5F5]">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center space-x-6 h-12 text-sm">
           {categories.map((category) => (
