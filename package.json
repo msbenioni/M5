@@ -12,7 +12,8 @@
     "build:server": "tsc -p tsconfig.json",
     "start:server": "node dist/server/index.js",
     "seed": "set NODE_OPTIONS=--loader ts-node/esm && node --experimental-modules auction-seeder/seed.ts",
-    "seed:drop": "set NODE_OPTIONS=--loader ts-node/esm && node --experimental-modules auction-seeder/seed.ts --drop"
+    "seed:drop": "set NODE_OPTIONS=--loader ts-node/esm && node --experimental-modules auction-seeder/seed.ts --drop",
+    "verify": "set NODE_OPTIONS=--loader ts-node/esm && node --experimental-modules auction-seeder/verify.ts"
   },
   "dependencies": {
     "commander": "^11.1.0",
